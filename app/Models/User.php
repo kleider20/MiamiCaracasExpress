@@ -19,6 +19,7 @@ use Laravel\Fortify\TwoFactorAuthenticatable;
  * @property int $id
  * @property string $name
  * @property string $email
+ * @property string|null $phone
  * @property Carbon|null $email_verified_at
  * @property string $password
  * @property string|null $two_factor_secret
@@ -28,7 +29,7 @@ use Laravel\Fortify\TwoFactorAuthenticatable;
  * @property Carbon|null $created_at
  * @property Carbon|null $updated_at
  */
-#[Fillable(['name', 'email', 'password'])]
+#[Fillable(['name', 'email', 'phone', 'password'])]
 #[Hidden(['password', 'two_factor_secret', 'two_factor_recovery_codes', 'remember_token'])]
 class User extends Authenticatable implements MustVerifyEmail, PasskeyUser
 {
@@ -57,5 +58,45 @@ class User extends Authenticatable implements MustVerifyEmail, PasskeyUser
     public function cartItems(): HasMany
     {
         return $this->hasMany(CartItem::class);
+    }
+
+    /**
+     * Get the user's orders.
+     *
+     * @return HasMany<Order, $this>
+     */
+    public function orders(): HasMany
+    {
+        return $this->hasMany(Order::class);
+    }
+
+    /**
+     * Get the user's shipping addresses.
+     *
+     * @return HasMany<Address, $this>
+     */
+    public function addresses(): HasMany
+    {
+        return $this->hasMany(Address::class);
+    }
+
+    /**
+     * Get the products saved in the user's wishlist.
+     *
+     * @return HasMany<WishlistItem, $this>
+     */
+    public function wishlist(): HasMany
+    {
+        return $this->hasMany(WishlistItem::class);
+    }
+
+    /**
+     * Get the user's saved payment methods.
+     *
+     * @return HasMany<PaymentMethod, $this>
+     */
+    public function paymentMethods(): HasMany
+    {
+        return $this->hasMany(PaymentMethod::class);
     }
 }

@@ -11,6 +11,7 @@ export type Product = {
     gradient: string;
     is_prime: boolean;
     is_deal: boolean;
+    in_stock: boolean;
     description: string;
 };
 

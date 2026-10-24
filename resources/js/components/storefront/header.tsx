@@ -4,8 +4,7 @@ import type { FormEvent } from 'react';
 import { useAuth } from '@/contexts/AuthContext';
 import { useCart } from '@/contexts/CartContext';
 import { useStorefront } from '@/contexts/StorefrontContext';
-import { login, register } from '@/routes';
-import { edit as editProfile } from '@/routes/profile';
+import { dashboard, login, register } from '@/routes';
 import { edit as editSecurity } from '@/routes/security';
 
 const DEPARTMENTS = [
@@ -221,10 +220,26 @@ export default function Header() {
                                     </p>
                                     <div className="border-t border-gray-200 pt-2">
                                         <Link
-                                            href={editProfile()}
+                                            href={dashboard()}
                                             className="block py-1 text-xs hover:text-amz-link-hover hover:underline"
                                         >
                                             Mi cuenta
+                                        </Link>
+                                        <Link
+                                            href={dashboard({
+                                                query: { section: 'pedidos' },
+                                            })}
+                                            className="block py-1 text-xs hover:text-amz-link-hover hover:underline"
+                                        >
+                                            Mis pedidos
+                                        </Link>
+                                        <Link
+                                            href={dashboard({
+                                                query: { section: 'deseos' },
+                                            })}
+                                            className="block py-1 text-xs hover:text-amz-link-hover hover:underline"
+                                        >
+                                            Lista de deseos
                                         </Link>
                                         <Link
                                             href={editSecurity()}
@@ -285,7 +300,11 @@ export default function Header() {
                     </div>
 
                     <Link
-                        href={isAuthenticated ? editProfile() : login()}
+                        href={
+                            isAuthenticated
+                                ? dashboard({ query: { section: 'pedidos' } })
+                                : login()
+                        }
                         className="outline-hover hidden rounded-sm px-2 py-1 text-left md:block"
                     >
                         <span className="block text-xs leading-tight text-gray-300">

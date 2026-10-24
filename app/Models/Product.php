@@ -19,6 +19,7 @@ use Illuminate\Database\Eloquent\Model;
     'gradient',
     'is_prime',
     'is_deal',
+    'in_stock',
     'description',
 ])]
 class Product extends Model
@@ -41,6 +42,7 @@ class Product extends Model
             'discount_percent' => 'integer',
             'is_prime' => 'boolean',
             'is_deal' => 'boolean',
+            'in_stock' => 'boolean',
         ];
     }
 }

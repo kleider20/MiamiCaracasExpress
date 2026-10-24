@@ -19,6 +19,8 @@ void createInertiaApp({
                 return null;
             case name === 'home':
                 return null;
+            case name.startsWith('dashboard'):
+                return null;
             case name.startsWith('auth/'):
                 return GuestLayout;
             case name.startsWith('settings/'):

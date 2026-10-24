@@ -1,0 +1,30 @@
+/* Estilos específicos del dashboard de la cuenta MCE */
+.hide-scroll::-webkit-scrollbar {
+    display: none;
+}
+
+.hide-scroll {
+    scrollbar-width: none;
+}
+
+.nav-item {
+    border-left: 3px solid transparent;
+    transition: all 0.15s ease;
+}
+
+.nav-item:hover {
+    border-left-color: #ff9900;
+    background: #f3f3f3;
+    color: #c7511f;
+}
+
+.nav-item.active {
+    border-left-color: #ff9900;
+    background: #fff;
+    font-weight: 700;
+    color: #c7511f;
+}
+
+.star {
+    color: #ffa41c;
+}
