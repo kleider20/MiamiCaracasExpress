@@ -28,7 +28,7 @@ export default function SellCTA() {
                         </h2>
                         <p className="mt-3 max-w-xl text-sm text-gray-300 sm:text-base">
                             Únete al marketplace que está creciendo más rápido
-                            en México. Abre tu tienda en minutos, llega a más
+                            en Venezuela. Abre tu tienda en minutos, llega a más
                             clientes y haz crecer tu negocio con nosotros.
                         </p>
 

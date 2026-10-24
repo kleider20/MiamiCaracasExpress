@@ -79,7 +79,7 @@ export default function ProductCard({ product }: { product: Product }) {
                             <span>Entrega GRATIS</span>
                         </span>
                     ) : (
-                        <span>Envío $99 · Llega en 4 días</span>
+                        <span>Envío {money(99)} · Llega en 4 días</span>
                     )}
                 </p>
 

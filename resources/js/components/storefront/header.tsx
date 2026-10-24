@@ -106,7 +106,7 @@ export default function Header() {
                             Enviar a
                             <br />
                             <span className="text-sm font-bold text-white">
-                                México 06600
+                                Caracas 1010
                             </span>
                         </span>
                     </button>
@@ -176,7 +176,7 @@ export default function Header() {
                         type="button"
                         className="outline-hover hidden items-center gap-1 rounded-sm px-2 py-2 text-sm font-bold lg:flex"
                     >
-                        <span aria-hidden="true">🇲🇽</span>
+                        <span aria-hidden="true">🇻🇪</span>
                         <span>ES</span>
                         <svg
                             viewBox="0 0 12 12"

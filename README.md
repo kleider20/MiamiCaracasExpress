@@ -110,3 +110,4 @@ resources/js/components/auth/              Componentes de autenticación
 - Los gradientes de las tarjetas vienen de la base de datos; están declarados con `@source inline(...)` en `app.css` para que Tailwind v4 los incluya en el build.
 - La tipografía es Roboto, cargada desde Google Fonts en `resources/views/app.blade.php`.
 - Los mensajes de validación en español viven en `lang/es/`.
+- La tienda está localizada para Venezuela: precios en bolívares (`Bs.`) con formato `es-VE`, envío a Caracas, métodos de pago locales y contenido del marketplace orientado a Venezuela.

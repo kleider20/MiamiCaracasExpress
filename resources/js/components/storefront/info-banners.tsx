@@ -1,8 +1,10 @@
+import { money } from '@/lib/format';
+
 const BENEFITS = [
     {
         icon: '🚚',
         title: 'Envío gratis',
-        text: 'En compras mayores a $599',
+        text: `En compras mayores a ${money(599)}`,
         accent: 'bg-blue-50',
     },
     {
