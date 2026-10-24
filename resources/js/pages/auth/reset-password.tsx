@@ -1,96 +1,147 @@
-import { Form, Head } from '@inertiajs/react';
-import InputError from '@/components/input-error';
-import PasswordInput from '@/components/password-input';
-import { Button } from '@/components/ui/button';
-import { Input } from '@/components/ui/input';
-import { Label } from '@/components/ui/label';
-import { Spinner } from '@/components/ui/spinner';
+import { Head, Link, router, usePage } from '@inertiajs/react';
+import { useState } from 'react';
+import type { FormEvent } from 'react';
+import AuthButton from '@/components/auth/auth-button';
+import AuthCard from '@/components/auth/auth-card';
+import InputField from '@/components/auth/input-field';
+import PasswordField from '@/components/auth/password-field';
+import { login } from '@/routes';
 import { update } from '@/routes/password';
+import type { SharedData } from '@/types';
+import { MIN_PASSWORD_LENGTH } from '@/lib/validation';
 
-type Props = {
-    token: string;
-    email: string;
-    passwordRules: string;
+type FieldErrors = {
+    password?: string;
+    password_confirmation?: string;
 };
 
-export default function ResetPassword({ token, email, passwordRules }: Props) {
+export default function ResetPassword({
+    token,
+    email,
+}: {
+    token: string;
+    email: string;
+}) {
+    const { errors: serverErrors } = usePage<SharedData>().props;
+
+    const [password, setPassword] = useState('');
+    const [passwordConfirmation, setPasswordConfirmation] = useState('');
+    const [errors, setErrors] = useState<FieldErrors>({});
+    const [processing, setProcessing] = useState(false);
+
+    const submit = (event: FormEvent<HTMLFormElement>) => {
+        event.preventDefault();
+
+        const nextErrors: FieldErrors = {};
+
+        if (password.length < MIN_PASSWORD_LENGTH) {
+            nextErrors.password = `Tu contraseña debe tener al menos ${MIN_PASSWORD_LENGTH} caracteres.`;
+        }
+
+        if (passwordConfirmation !== password) {
+            nextErrors.password_confirmation =
+                'Las contraseñas no coinciden. Vuelve a escribirlas.';
+        }
+
+        setErrors(nextErrors);
+
+        if (Object.keys(nextErrors).length > 0) {
+            return;
+        }
+
+        router.post(
+            update().url,
+            {
+                token,
+                email,
+                password,
+                password_confirmation: passwordConfirmation,
+            },
+            {
+                onStart: () => setProcessing(true),
+                onFinish: () => setProcessing(false),
+            },
+        );
+    };
+
     return (
         <>
-            <Head title="Reset password" />
+            <Head title="Restablecer contraseña" />
 
-            <Form
-                {...update.form()}
-                transform={(data) => ({ ...data, token, email })}
-                resetOnSuccess={['password', 'password_confirmation']}
+            <AuthCard
+                title="Restablecer contraseña"
+                subtitle="Elige una contraseña nueva para tu cuenta de Miami Caracas Express."
             >
-                {({ processing, errors }) => (
-                    <div className="grid gap-6">
-                        <div className="grid gap-2">
-                            <Label htmlFor="email">Email</Label>
-                            <Input
-                                id="email"
-                                type="email"
-                                name="email"
-                                autoComplete="email"
-                                value={email}
-                                className="mt-1 block w-full"
-                                readOnly
-                            />
-                            <InputError
-                                message={errors.email}
-                                className="mt-2"
-                            />
-                        </div>
+                <form onSubmit={submit} noValidate className="space-y-4">
+                    <InputField
+                        id="email"
+                        label="Correo electrónico"
+                        type="email"
+                        value={email}
+                        onChange={() => undefined}
+                        autoComplete="email"
+                        readOnly
+                    />
 
-                        <div className="grid gap-2">
-                            <Label htmlFor="password">Password</Label>
-                            <PasswordInput
-                                id="password"
-                                name="password"
-                                autoComplete="new-password"
-                                className="mt-1 block w-full"
-                                autoFocus
-                                placeholder="Password"
-                                passwordrules={passwordRules}
-                            />
-                            <InputError message={errors.password} />
-                        </div>
+                    <PasswordField
+                        id="password"
+                        label="Nueva contraseña"
+                        value={password}
+                        onChange={setPassword}
+                        placeholder="Escribe tu nueva contraseña"
+                        autoComplete="new-password"
+                        hint={`Al menos ${MIN_PASSWORD_LENGTH} caracteres.`}
+                        autoFocus
+                        required
+                        error={errors.password ?? serverErrors.password}
+                    />
 
-                        <div className="grid gap-2">
-                            <Label htmlFor="password_confirmation">
-                                Confirm password
-                            </Label>
-                            <PasswordInput
-                                id="password_confirmation"
-                                name="password_confirmation"
-                                autoComplete="new-password"
-                                className="mt-1 block w-full"
-                                placeholder="Confirm password"
-                                passwordrules={passwordRules}
-                            />
-                            <InputError
-                                message={errors.password_confirmation}
-                                className="mt-2"
-                            />
-                        </div>
+                    <PasswordField
+                        id="password_confirmation"
+                        label="Confirma tu nueva contraseña"
+                        value={passwordConfirmation}
+                        onChange={setPasswordConfirmation}
+                        placeholder="Repite tu nueva contraseña"
+                        autoComplete="new-password"
+                        required
+                        error={
+                            errors.password_confirmation ??
+                            serverErrors.password_confirmation
+                        }
+                    />
 
-                        <Button
-                            type="submit"
-                            className="mt-4 w-full"
-                            disabled={processing}
-                            data-test="reset-password-button"
-                        >
-                            {processing && <Spinner />}
-                            Reset password
-                        </Button>
-                    </div>
-                )}
-            </Form>
+                    <AuthButton
+                        type="submit"
+                        loading={processing}
+                        loadingLabel="Guardando..."
+                    >
+                        Restablecer contraseña
+                    </AuthButton>
+                </form>
+            </AuthCard>
+
+            <div className="mt-4 text-center">
+                <Link
+                    href={login()}
+                    className="link-mk inline-flex items-center gap-1 text-xs font-medium"
+                >
+                    <svg
+                        viewBox="0 0 24 24"
+                        fill="none"
+                        className="size-3.5"
+                        aria-hidden="true"
+                    >
+                        <path
+                            d="M15 5l-7 7 7 7"
+                            stroke="currentColor"
+                            strokeWidth="2"
+                            strokeLinecap="round"
+                            strokeLinejoin="round"
+                        />
+                    </svg>
+                    Volver a iniciar sesión
+                </Link>
+            </div>
         </>
     );
 }
-
-ResetPassword.layout = {
-    title: 'Reset password',
-    description: 'Please enter your new password below',
-};

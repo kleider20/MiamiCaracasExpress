@@ -21,5 +21,20 @@ test('new users can register', function () {
     ]);
 
     $this->assertAuthenticated();
-    $response->assertRedirect(route('dashboard', absolute: false));
+    $response->assertRedirect(route('home', absolute: false));
+});
+
+test('registration validation messages are friendly and in Spanish', function () {
+    $response = $this->from(route('register'))->post(route('register.store'), [
+        'name' => '',
+        'email' => 'not-an-email',
+        'password' => '',
+        'password_confirmation' => '',
+    ]);
+
+    $response->assertSessionHasErrors([
+        'name' => 'Escribe tu nombre para crear la cuenta.',
+        'email' => 'Ese correo no parece válido. Usa el formato nombre@dominio.com.',
+        'password' => 'Elige una contraseña para tu cuenta.',
+    ]);
 });

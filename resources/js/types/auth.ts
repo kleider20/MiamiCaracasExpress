@@ -14,6 +14,23 @@ export type Auth = {
     user: User;
 };
 
+export type FlashMessages = {
+    success: string | null;
+    error: string | null;
+    status: string | null;
+};
+
+export type SharedData = {
+    name: string;
+    auth: {
+        user: User | null;
+    };
+    flash: FlashMessages;
+    errors: Record<string, string>;
+    [key: string]: unknown;
+};
+
+
 export type Passkey = {
     id: number;
     name: string;

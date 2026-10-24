@@ -2,16 +2,53 @@
 
 @import 'tw-animate-css';
 
+@import './auth.css';
+
 @source '../views';
 @source '../../vendor/laravel/framework/src/Illuminate/Pagination/resources/views/*.blade.php';
+
+/* Product gradients come from the database, so they are safelisted here. */
+@source inline("from-slate-700 to-slate-900");
+@source inline("from-blue-600 to-indigo-800");
+@source inline("from-gray-500 to-gray-700");
+@source inline("from-purple-600 to-fuchsia-800");
+@source inline("from-amber-700 to-yellow-900");
+@source inline("from-emerald-600 to-green-800");
+@source inline("from-sky-500 to-cyan-700");
+@source inline("from-indigo-600 to-blue-900");
+@source inline("from-teal-600 to-cyan-900");
+@source inline("from-orange-600 to-red-800");
+@source inline("from-red-600 to-rose-900");
+@source inline("from-zinc-600 to-zinc-900");
+@source inline("from-pink-500 to-rose-700");
+@source inline("from-yellow-500 to-amber-700");
+@source inline("from-fuchsia-600 to-purple-900");
+@source inline("from-green-600 to-emerald-900");
+@source inline("from-lime-600 to-green-800");
+@source inline("from-yellow-400 to-orange-600");
 
 @custom-variant dark (&:is(.dark *));
 
 @theme {
     --font-sans:
-        'Instrument Sans', ui-sans-serif, system-ui, sans-serif,
+        'Roboto', 'Instrument Sans', ui-sans-serif, system-ui, sans-serif,
         'Apple Color Emoji', 'Segoe UI Emoji', 'Segoe UI Symbol',
         'Noto Color Emoji';
+
+    --color-amz-dark: #131921;
+    --color-amz-navy: #232f3e;
+    --color-amz-navy-light: #37475a;
+    --color-amz-orange: #ff9900;
+    --color-amz-yellow: #ffd814;
+    --color-amz-cart-yellow: #fcc616;
+    --color-amz-buy-orange: #ffa41c;
+    --color-amz-link: #007185;
+    --color-amz-link-hover: #c7511f;
+    --color-amz-red: #cc0c39;
+    --color-amz-price: #b12704;
+    --color-amz-prime: #00a8e1;
+    --color-amz-green: #007600;
+    --color-amz-bg: #eaeded;
 
     --radius-lg: var(--radius);
     --radius-md: calc(var(--radius) - 2px);
@@ -141,3 +178,116 @@
         @apply bg-background text-foreground;
     }
 }
+
+@layer components {
+    .hide-scroll {
+        -ms-overflow-style: none;
+        scrollbar-width: none;
+    }
+
+    .hide-scroll::-webkit-scrollbar {
+        display: none;
+    }
+
+    .outline-hover {
+        outline: 1px solid transparent;
+        outline-offset: 1px;
+    }
+
+    .outline-hover:hover,
+    .outline-hover:focus-visible {
+        outline-color: #ffffff;
+    }
+
+    .amz-underline:hover {
+        color: var(--color-amz-link-hover);
+        text-decoration: underline;
+    }
+}
+
+@keyframes mkPop {
+    0% {
+        transform: scale(1);
+    }
+
+    50% {
+        transform: scale(1.4);
+    }
+
+    100% {
+        transform: scale(1);
+    }
+}
+
+@keyframes mkFadeIn {
+    from {
+        opacity: 0;
+        transform: translateY(8px);
+    }
+
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+@keyframes mkFadeInCenter {
+    from {
+        opacity: 0;
+        transform: translate(-50%, 8px);
+    }
+
+    to {
+        opacity: 1;
+        transform: translate(-50%, 0);
+    }
+}
+
+@keyframes mkScaleIn {
+    from {
+        opacity: 0;
+        transform: scale(0.96);
+    }
+
+    to {
+        opacity: 1;
+        transform: scale(1);
+    }
+}
+
+@keyframes mkSpinSlow {
+    to {
+        transform: rotate(360deg);
+    }
+}
+
+.mk-pop {
+    animation: mkPop 300ms ease-out;
+}
+
+.mk-fade-in {
+    animation: mkFadeIn 220ms ease-out both;
+}
+
+.mk-fade-in-center {
+    animation: mkFadeInCenter 220ms ease-out both;
+}
+
+.mk-scale-in {
+    animation: mkScaleIn 200ms ease-out both;
+}
+
+.mk-spin-slow {
+    animation: mkSpinSlow 18s linear infinite;
+}
+
+@media (prefers-reduced-motion: reduce) {
+    .mk-pop,
+    .mk-fade-in,
+    .mk-fade-in-center,
+    .mk-scale-in,
+    .mk-spin-slow {
+        animation: none;
+    }
+}
+

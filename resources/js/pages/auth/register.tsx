@@ -1,120 +1,166 @@
-import { Form, Head } from '@inertiajs/react';
-import InputError from '@/components/input-error';
-import PasswordInput from '@/components/password-input';
-import TextLink from '@/components/text-link';
-import { Button } from '@/components/ui/button';
-import { Input } from '@/components/ui/input';
-import { Label } from '@/components/ui/label';
-import { Spinner } from '@/components/ui/spinner';
+import { Head, Link, usePage } from '@inertiajs/react';
+import { useState } from 'react';
+import type { FormEvent } from 'react';
+import AuthButton from '@/components/auth/auth-button';
+import AuthCard from '@/components/auth/auth-card';
+import InputField from '@/components/auth/input-field';
+import PasswordField from '@/components/auth/password-field';
+import { useAuth } from '@/contexts/AuthContext';
+import { isValidEmail, MIN_PASSWORD_LENGTH } from '@/lib/validation';
 import { login } from '@/routes';
-import { store } from '@/routes/register';
+import type { SharedData } from '@/types';
 
-type Props = {
-    passwordRules: string;
+type FieldErrors = {
+    name?: string;
+    email?: string;
+    password?: string;
+    password_confirmation?: string;
 };
 
-export default function Register({ passwordRules }: Props) {
+export default function Register() {
+    const { register, loading } = useAuth();
+    const { errors: serverErrors } = usePage<SharedData>().props;
+
+    const [name, setName] = useState('');
+    const [email, setEmail] = useState('');
+    const [password, setPassword] = useState('');
+    const [passwordConfirmation, setPasswordConfirmation] = useState('');
+    const [errors, setErrors] = useState<FieldErrors>({});
+
+    const submit = (event: FormEvent<HTMLFormElement>) => {
+        event.preventDefault();
+
+        const nextErrors: FieldErrors = {};
+
+        if (name.trim().length < 3) {
+            nextErrors.name = 'Escribe tu nombre completo (mínimo 3 letras).';
+        }
+
+        if (!isValidEmail(email)) {
+            nextErrors.email = 'Escribe un correo electrónico válido.';
+        }
+
+        if (password.length < MIN_PASSWORD_LENGTH) {
+            nextErrors.password = `Tu contraseña debe tener al menos ${MIN_PASSWORD_LENGTH} caracteres.`;
+        }
+
+        if (passwordConfirmation !== password) {
+            nextErrors.password_confirmation =
+                'Las contraseñas no coinciden. Vuelve a escribirlas.';
+        }
+
+        setErrors(nextErrors);
+
+        if (Object.keys(nextErrors).length > 0) {
+            return;
+        }
+
+        register({
+            name: name.trim(),
+            email: email.trim(),
+            password,
+            password_confirmation: passwordConfirmation,
+        });
+    };
+
     return (
         <>
-            <Head title="Register" />
-            <Form
-                {...store.form()}
-                resetOnSuccess={['password', 'password_confirmation']}
-                disableWhileProcessing
-                className="flex flex-col gap-6"
+            <Head title="Crear cuenta" />
+
+            <AuthCard
+                title="Crear cuenta"
+                subtitle="Únete a Miami Caracas Express y disfruta de envíos gratis y ofertas exclusivas."
+                footer={
+                    <p>
+                        Al crear tu cuenta aceptas nuestras{' '}
+                        <a href="#" className="link-mk">
+                            condiciones de uso
+                        </a>{' '}
+                        y el{' '}
+                        <a href="#" className="link-mk">
+                            aviso de privacidad
+                        </a>
+                        .
+                    </p>
+                }
             >
-                {({ processing, errors }) => (
-                    <>
-                        <div className="grid gap-6">
-                            <div className="grid gap-2">
-                                <Label htmlFor="name">Name</Label>
-                                <Input
-                                    id="name"
-                                    type="text"
-                                    required
-                                    autoFocus
-                                    tabIndex={1}
-                                    autoComplete="name"
-                                    name="name"
-                                    placeholder="Full name"
-                                />
-                                <InputError
-                                    message={errors.name}
-                                    className="mt-2"
-                                />
-                            </div>
+                <form onSubmit={submit} noValidate className="space-y-4">
+                    <InputField
+                        id="name"
+                        label="Tu nombre"
+                        value={name}
+                        onChange={setName}
+                        placeholder="Nombre y apellidos"
+                        autoComplete="name"
+                        autoFocus
+                        required
+                        error={errors.name ?? serverErrors.name}
+                    />
 
-                            <div className="grid gap-2">
-                                <Label htmlFor="email">Email address</Label>
-                                <Input
-                                    id="email"
-                                    type="email"
-                                    required
-                                    tabIndex={2}
-                                    autoComplete="email"
-                                    name="email"
-                                    placeholder="email@example.com"
-                                />
-                                <InputError message={errors.email} />
-                            </div>
+                    <InputField
+                        id="email"
+                        label="Correo electrónico"
+                        type="email"
+                        value={email}
+                        onChange={setEmail}
+                        placeholder="tu@correo.com"
+                        autoComplete="email"
+                        inputMode="email"
+                        required
+                        error={errors.email ?? serverErrors.email}
+                    />
 
-                            <div className="grid gap-2">
-                                <Label htmlFor="password">Password</Label>
-                                <PasswordInput
-                                    id="password"
-                                    required
-                                    tabIndex={3}
-                                    autoComplete="new-password"
-                                    name="password"
-                                    placeholder="Password"
-                                    passwordrules={passwordRules}
-                                />
-                                <InputError message={errors.password} />
-                            </div>
+                    <PasswordField
+                        id="password"
+                        label="Contraseña"
+                        value={password}
+                        onChange={setPassword}
+                        placeholder="Crea una contraseña"
+                        autoComplete="new-password"
+                        hint={`Al menos ${MIN_PASSWORD_LENGTH} caracteres.`}
+                        required
+                        error={errors.password ?? serverErrors.password}
+                    />
 
-                            <div className="grid gap-2">
-                                <Label htmlFor="password_confirmation">
-                                    Confirm password
-                                </Label>
-                                <PasswordInput
-                                    id="password_confirmation"
-                                    required
-                                    tabIndex={4}
-                                    autoComplete="new-password"
-                                    name="password_confirmation"
-                                    placeholder="Confirm password"
-                                    passwordrules={passwordRules}
-                                />
-                                <InputError
-                                    message={errors.password_confirmation}
-                                />
-                            </div>
+                    <PasswordField
+                        id="password_confirmation"
+                        label="Confirma tu contraseña"
+                        value={passwordConfirmation}
+                        onChange={setPasswordConfirmation}
+                        placeholder="Repite tu contraseña"
+                        autoComplete="new-password"
+                        required
+                        error={
+                            errors.password_confirmation ??
+                            serverErrors.password_confirmation
+                        }
+                    />
 
-                            <Button
-                                type="submit"
-                                className="mt-2 w-full"
-                                tabIndex={5}
-                                data-test="register-user-button"
-                            >
-                                {processing && <Spinner />}
-                                Create account
-                            </Button>
-                        </div>
+                    <AuthButton
+                        type="submit"
+                        variant="secondary"
+                        loading={loading}
+                        loadingLabel="Creando cuenta..."
+                    >
+                        Crear tu cuenta
+                    </AuthButton>
+                </form>
+            </AuthCard>
 
-                        <div className="text-center text-sm text-muted-foreground">
-                            Already have an account?{' '}
-                            <TextLink href={login()} tabIndex={6}>
-                                Log in
-                            </TextLink>
-                        </div>
-                    </>
-                )}
-            </Form>
+            <div className="my-4 flex items-center gap-3">
+                <span className="h-px flex-1 bg-gray-200" />
+                <span className="text-xs font-medium text-gray-500">
+                    ¿Ya tienes una cuenta?
+                </span>
+                <span className="h-px flex-1 bg-gray-200" />
+            </div>
+
+            <Link
+                href={login()}
+                className="btn-amazon flex h-9 w-full items-center justify-center px-4 text-sm font-medium text-gray-900 shadow-sm transition"
+            >
+                Iniciar sesión
+            </Link>
         </>
     );
 }
-
-Register.layout = {
-    title: 'Create an account',
-    description: 'Enter your details below to create your account',
-};

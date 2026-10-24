@@ -19,7 +19,19 @@ test('users can authenticate using the login screen', function () {
     ]);
 
     $this->assertAuthenticated();
-    $response->assertRedirect(route('dashboard', absolute: false));
+    $response->assertRedirect(route('home', absolute: false));
+});
+
+test('login validation messages are friendly and in Spanish', function () {
+    $response = $this->from(route('login'))->post(route('login.store'), [
+        'email' => '',
+        'password' => '',
+    ]);
+
+    $response->assertSessionHasErrors([
+        'email' => 'Escribe el correo de tu cuenta de Miami Caracas Express.',
+        'password' => 'Escribe tu contraseña para continuar.',
+    ]);
 });
 
 test('users with two factor enabled are redirected to two factor challenge', function () {

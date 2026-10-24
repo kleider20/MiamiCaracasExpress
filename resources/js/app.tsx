@@ -1,10 +1,12 @@
 import { createInertiaApp } from '@inertiajs/react';
 import { Toaster } from '@/components/ui/sonner';
 import { TooltipProvider } from '@/components/ui/tooltip';
+import { AuthProvider } from '@/contexts/AuthContext';
 import { initializeTheme } from '@/hooks/use-appearance';
 import AppLayout from '@/layouts/app-layout';
-import AuthLayout from '@/layouts/auth-layout';
+import GuestLayout from '@/layouts/guest-layout';
 import SettingsLayout from '@/layouts/settings/layout';
+import type { User } from '@/types';
 
 const appName = import.meta.env.VITE_APP_NAME || 'Laravel';
 
@@ -14,8 +16,10 @@ void createInertiaApp({
         switch (true) {
             case name === 'welcome':
                 return null;
+            case name === 'home':
+                return null;
             case name.startsWith('auth/'):
-                return AuthLayout;
+                return GuestLayout;
             case name.startsWith('settings/'):
                 return [AppLayout, SettingsLayout];
             default:
@@ -23,10 +27,14 @@ void createInertiaApp({
         }
     },
     strictMode: true,
-    withApp(app) {
+    withApp(app, { page }) {
+        const auth = page.props.auth as { user?: User | null } | undefined;
+
         return (
             <TooltipProvider delayDuration={0}>
-                {app}
+                <AuthProvider initialUser={auth?.user ?? null}>
+                    {app}
+                </AuthProvider>
                 <Toaster />
             </TooltipProvider>
         );
